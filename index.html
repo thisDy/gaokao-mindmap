@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高考志愿填报讲座 - 思维导图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .header {
+    text-align: center;
+    padding: 32px 20px 16px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-bottom: 1px solid #334155;
+  }
+  .header h1 {
+    font-size: 28px;
+    background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header p { color: #94a3b8; font-size: 14px; }
+  .legend {
+    display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+    padding: 12px 20px; border-bottom: 1px solid #1e293b;
+    font-size: 12px; color: #94a3b8;
+  }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  .map-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* 第一层：6大板块 */
+  .branch {
+    margin-bottom: 28px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    background: #1e293b;
+  }
+  .branch-header {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: background .2s;
+    user-select: none;
+  }
+  .branch-header:hover { background: #253347; }
+  .branch-icon { font-size: 24px; }
+  .branch-title { font-size: 18px; font-weight: 700; flex: 1; }
+  .branch-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    font-weight: 600;
+  }
+  .branch-arrow {
+    font-size: 18px; transition: transform .3s; color: #64748b;
+  }
+  .branch.open .branch-arrow { transform: rotate(90deg); }
+
+  .branch-body {
+    display: none;
+    padding: 0 20px 20px;
+    animation: fadeIn .3s ease;
+  }
+  .branch.open .branch-body { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* 子节点 */
+  .node {
+    margin: 10px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #0f172a;
+    border-left: 4px solid #475569;
+    position: relative;
+  }
+  .node-title {
+    font-size: 15px; font-weight: 600; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .node-title .emoji { font-size: 16px; }
+  .node-content { font-size: 13px; color: #94a3b8; line-height: 1.8; }
+  .node-content ul { padding-left: 18px; }
+  .node-content li { margin: 3px 0; }
+
+  /* 注释标签 */
+  .tag {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 4px; font-weight: 600; margin-right: 6px;
+    vertical-align: middle;
+  }
+  .tag-good { background: #065f46; color: #6ee7b7; }
+  .tag-warn { background: #78350f; color: #fbbf24; }
+  .tag-tip  { background: #1e3a5f; color: #60a5fa; }
+  .tag-hot  { background: #7f1d1d; color: #fca5a5; }
+  .tag-new  { background: #4c1d95; color: #c4b5fd; }
+  .tag-key  { background: #831843; color: #f9a8d4; }
+
+  /* 案例框 */
+  .case {
+    margin: 10px 0 10px 16px;
+    padding: 10px 14px;
+    background: #1a2332;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.7;
+  }
+  .case-title {
+    font-size: 12px; font-weight: 700; color: #f59e0b;
+    margin-bottom: 4px;
+  }
+
+  /* 数据高亮 */
+  .num { color: #f472b6; font-weight: 700; }
+  .num-good { color: #34d399; font-weight: 700; }
+  .num-bad { color: #f87171; font-weight: 700; }
+
+  /* 底部来源 */
+  .footer {
+    text-align: center; padding: 20px;
+    font-size: 12px; color: #475569;
+    border-top: 1px solid #1e293b;
+  }
+
+  /* 颜色主题 per branch */
+  .b1 .branch-header { border-left: 5px solid #60a5fa; }
+  .b1 .branch-badge { background: #1e3a5f; color: #60a5fa; }
+  .b1 .node { border-left-color: #60a5fa; }
+
+  .b2 .branch-header { border-left: 5px solid #34d399; }
+  .b2 .branch-badge { background: #065f46; color: #34d399; }
+  .b2 .node { border-left-color: #34d399; }
+
+  .b3 .branch-header { border-left: 5px solid #f59e0b; }
+  .b3 .branch-badge { background: #78350f; color: #f59e0b; }
+  .b3 .node { border-left-color: #f59e0b; }
+
+  .b4 .branch-header { border-left: 5px solid #f472b6; }
+  .b4 .branch-badge { background: #831843; color: #f472b6; }
+  .b4 .node { border-left-color: #f472b6; }
+
+  .b5 .branch-header { border-left: 5px solid #a78bfa; }
+  .b5 .branch-badge { background: #4c1d95; color: #a78bfa; }
+  .b5 .node { border-left-color: #a78bfa; }
+
+  .b6 .branch-header { border-left: 5px solid #fb923c; }
+  .b6 .branch-badge { background: #7c2d12; color: #fb923c; }
+  .b6 .node { border-left-color: #fb923c; }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .header h1 { font-size: 22px; }
+    .map-container { padding: 16px 8px 40px; }
+    .branch-header { padding: 12px 14px; }
+    .branch-body { padding: 0 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📋 高考志愿填报讲座 · 第二讲</h1>
+  <p>刘老师 · 有未来生涯 · 2026年6月21日</p>
+  <p style="margin-top:6px;color:#64748b;font-size:12px;">点击各板块展开 / 收起</p>
+</div>
+
+<div class="legend">
+  <span><span class="dot" style="background:#34d399"></span> 利好</span>
+  <span><span class="dot" style="background:#f87171"></span> 风险/警告</span>
+  <span><span class="dot" style="background:#60a5fa"></span> 策略/建议</span>
+  <span><span class="dot" style="background:#f59e0b"></span> 关键信息</span>
+  <span><span class="dot" style="background:#a78bfa"></span> 新变化</span>
+  <span><span class="dot" style="background:#f472b6"></span> 核心观点</span>
+</div>
+
+<div class="map-container">
+
+<!-- ==================== 板块1 ==================== -->
+<div class="branch b1 open">
+  <div class="branch-header" onclick="toggle(this)">
+    <span class="branch-icon">📊</span>
+    <span class="branch-title">一、2026年高考数据总览</span>
+    <span class="branch-badge">基础数据</span>
+    <span class="branch-arrow">▶</span>
+  </div>
+  <div class="branch-body">
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📉</span> 报名人数回落</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-good">利好</span>全国 <span class="num-good">1290 万</span>，<strong>13 年来首次回落</strong></li>
+          <li><span class="tag tag-good">利好</span>广东夏季高考 <span class="num-good">78 万</span>，<strong>6 年来首次降低</strong></li>
+          <li>物理组考生减少 <span class="num">0.8 万</span>，历史类增加 <span class="num-bad">0.6 万</span></li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          考生减少 + 招生扩招 = 上线率上升。但<strong>顶级名校竞争不变</strong>，受益最大的是中档学生。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📈</span> 上线率数据</div>
+      <div class="node-content">
+        <ul>
+          <li>历史类本科上线率 <span class="num-bad">31.4%</span> — 物理类是历史类的 <strong>两倍</strong></li>
+          <li>物理类本科上线率 <span class="num-good">62.8%</span></li>
+          <li>广东平均本科上线率 <span class="num">50.3%</span>，今年将继续上升</li>
+          <li>历史类特控率 <span class="num-bad">17.1%</span>｜物理类特控率 <span class="num-good">24.1%</span></li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          上本科不难（含民办），<strong>上公办本科 + 好专业才是核心目标</strong>。民办本科未来可能倒闭，需谨慎。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🎯</span> 最受益分段</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-key">核心</span><span class="num" style="font-size:16px">570 — 610 分</span> 的中档学生受益最大</li>
+          <li>600 分以上未必受益（顶级校竞争不变）</li>
+          <li>扩招主要集中在广东省内公办院校</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🏫</span> 广东省内扩招示例</div>
+      <div class="node-content">
+        <ul>
+          <li>广东技术师范大学：扩招 <span class="num-good">3927 人</span>（80% 给广东考生）</li>
+          <li>整体扩招趋势明显，分数线/排位大概率下降</li>
+          <li><span class="tag tag-warn">注意</span>名校扩招对高分段排位影响不大</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 板块2 ==================== -->
+<div class="branch b2">
+  <div class="branch-header" onclick="toggle(this)">
+    <span class="branch-icon">🎯</span>
+    <span class="branch-title">二、六大利好变化</span>
+    <span class="branch-badge">今年独有</span>
+    <span class="branch-arrow">▶</span>
+  </div>
+  <div class="branch-body">
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">1️⃣</span> 人数回落</div>
+      <div class="node-content">竞争压力减轻，尤其物理类明显。</div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">2️⃣</span> 本科扩招</div>
+      <div class="node-content">
+        <ul>
+          <li>广东省考试院指令：争取本科招生名额多 <span class="num-good">1 万个</span></li>
+          <li>广东技术师范 +3927、更多省内外高校扩招</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">3️⃣</span> 严控 / 取消大类招生</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-new">政策</span>教育部要求：按专业直接招生，大类须"小而精、方向统一"</li>
+          <li>截止 6 月已有 <span class="num">50+ 所 211 以上高校</span>明确取消或压缩大类</li>
+          <li>西北农林科技、吉林农业：<strong>全面取消大类</strong></li>
+          <li>天津大学：重组大类，入学后分流<strong>不看成绩</strong></li>
+          <li>华南理工：大类保留但分流<strong>无成绩要求</strong></li>
+        </ul>
+        <div class="case">
+          <div class="case-title">⚠️ 关键注释</div>
+          大类重组 → 专业组组成变化 → <strong>去年数据不能直接套用</strong>！这是今年填报最大难点之一。<br>
+          案例：中山大学 2021 年首次大类招生，混搭冷热专业，导致当年招生"几十年最差"，至今未恢复高分状态。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">4️⃣</span> 转专业松绑</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-good">利好</span>"转出无门槛，转入有考核"成为主流</li>
+          <li>天津大学：转专业<strong>不限次数</strong></li>
+          <li>西南财大 / 中国海洋大学：自主选课修满学分即可按该专业毕业</li>
+          <li>中大：接受转入上限 <span class="num">30%</span></li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 策略注释</div>
+          ① 想冲名校但怕被调剂？如果转专业政策好 → <strong>大胆冲</strong><br>
+          ② 物理没选化学？通过转专业也能进理工科（不看高中选科）<br>
+          ③ <span class="tag tag-warn">限制</span>中外合办专业<strong>不能转出</strong>到非中外合办<br>
+          ④ <span class="tag tag-tip">建议</span>现在就打电话给目标校招生办问清楚转专业细则
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">5️⃣</span> 零调剂（六保一 / 三保一）</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-good">利好</span>投档后保证录取所选 6 个专业之一，不调剂到其他</li>
+          <li>高校通过调增热门专业名额、缩减冷门来实现</li>
+          <li>承诺院校：中大、华工、厦大、天大、北邮、北科大、暨大等</li>
+          <li>暨南大学：<strong>最新加入</strong>（6/21 公布）</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">⚠️ 重要注释</div>
+          ① <strong>依然要勾选"服从调剂"</strong>！零调剂 ≠ 不需要服从调剂。不勾 → 退档风险极高<br>
+          ② 有些学校设隐藏门槛（如湖南大学去年要求省排 5400 名以内）<br>
+          ③ 六保一的学校分数<strong>大概率上涨</strong>，你"稳"的可能变"冲"<br>
+          ④ 一定要打电话给招办确认具体条件
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">6️⃣</span> 中外合办项目激增</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-new">新增</span>全国新增 <span class="num">219 个</span>中外合办项目/机构（本科约 180 个）</li>
+          <li>理工科占 <span class="num">70%</span>，最热门：AI / 计算机</li>
+          <li>代表项目：上交 × 南洋理工 2+2、北航 × 马来亚（具身智能）、天大 × 港理工（深圳）、武大 × 杜伦</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 策略注释</div>
+          ① 分数比裸分低 → <strong>冲刺名校的最佳通道</strong><br>
+          ② 首年在粤招生项目 → 有捡漏机会<br>
+          ③ 关注培养机制（4+0 / 2+2）、保研率、是否强制出国<br>
+          ④ <span class="tag tag-warn">注意</span>新项目成熟度存疑，外方授课可能"草台班子"<br>
+          ⑤ 有机会的 985：华工（都灵理工·土木）、哈工大（俄罗斯）、大连理工<br>
+          ⑥ 没机会捡漏的：天大×港理工、武大×杜伦（太火了）
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 板块3 ==================== -->
+<div class="branch b3">
+  <div class="branch-header" onclick="toggle(this)">
+    <span class="branch-icon">🔬</span>
+    <span class="branch-title">三、新专业 · 取消专业 · 交叉学科</span>
+    <span class="branch-badge">专业趋势</span>
+    <span class="branch-arrow">▶</span>
+  </div>
+  <div class="branch-body">
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🆕</span> 38 个新专业</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-new">产业需求</span>低空经济与管理、数字金融等 — 全部是交叉学科</li>
+          <li><span class="tag tag-hot">未来科技</span>具身智能等 — 毕业生月薪 <span class="num-good">6 万起</span>（不论学校背景）</li>
+          <li><span class="tag tag-tip">民生福祉</span>艺术治疗、数字文旅、心理脑与认知科学</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          新专业没有往年数据 → 很多人不敢报 → <strong>可能是低分进的好赛道</strong>。但需评估学校是否有能力办该专业（师资、设备、资金）。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🔗</span> 交叉学科（新学科门类）</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-key">核心观点</span>AI 最容易替代的是<strong>单一技术</strong>，交叉学科 = 复合型人才 = 不可替代</li>
+          <li>例：代码 + 管理 = 算法；金融 + 数字技术 = 数字金融</li>
+          <li>很多大学已开设双学位、辅修、交叉学科项目</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          刘老师原话：<em>"你会写代码，现在没工作了。但你会写代码 + 会管理 + 会算法，就是交叉学科。"</em><br>
+          选专业时看到有交叉学科的 → 可以大胆放入考虑范围。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">❌</span> 被取消 / 停招的专业</div>
+      <div class="node-content">
+        <ul>
+          <li>深圳大学：停招 <span class="num-bad">26 个</span>本科专业</li>
+          <li>外语类大面积撤退：北师港浸大取消翻译、华东师大停招德语和翻译</li>
+          <li>纯语言类专业 → 分数最低，可用于"冲名校"</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          外语不会消失，但必须"外语 + X"（+ 数字 / AI / 商科）。社交能力强的学生，可以拿纯语言低分优势冲名校头衔。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🏗️</span> 深圳大学的变革（标杆案例）</div>
+      <div class="node-content">
+        <ul>
+          <li>停招 26 个旧专业 + 新增前沿专业</li>
+          <li><span class="tag tag-new">突破</span>文科生可在本科阶段学 AI / 理科</li>
+          <li>法学 + 人工智能双学位、语言类双学位</li>
+          <li>新增多个特色班</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          深大专业组分得"干净纯粹"，是填报标杆。一个学校愿意与时俱进、做特色班 → 值得关注。深大今年分数<strong>大概率还会涨</strong>。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🤖</span> 人工智能与专业选择</div>
+      <div class="node-content">
+        <ul>
+          <li>AI 冲击是<strong>必然的，不是泡沫</strong></li>
+          <li>四年前热门的计算机科学（写代码）→ 已被 AI 颠覆</li>
+          <li>机械工程：四年前冷门 → 现在撞上最大风口</li>
+          <li><span class="tag tag-tip">建议</span>用 DeepSeek 等工具深入了解感兴趣的专业</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          不要只看专业名字好不好听。要了解专业<strong>实际学什么、毕业做什么、AI 能否替代</strong>。在出分前就应该把感兴趣的专业全部研究一遍。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 板块4 ==================== -->
+<div class="branch b4">
+  <div class="branch-header" onclick="toggle(this)">
+    <span class="branch-icon">🧩</span>
+    <span class="branch-title">四、志愿填报核心策略</span>
+    <span class="branch-badge">实操方法</span>
+    <span class="branch-arrow">▶</span>
+  </div>
+  <div class="branch-body">
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📐</span> 同位分法</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-key">核心</span>出分后关注<strong>排位而非分数</strong></li>
+          <li>用排位找到往年同位分，再进行对比</li>
+          <li>必须看 <span class="num">3–5 年数据</span>，不能只看去年</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📦</span> 专业组研究（今年最难的部分）</div>
+      <div class="node-content">
+        <ul>
+          <li>大类拆分 → 专业组数量大增 → 45 个志愿<strong>可能不够用</span></li>
+          <li><span class="tag tag-warn">警告</span>去年组内专业组成变了 → 不能套用去年数据</li>
+          <li>参考标杆：深大（组内专业纯粹统一）vs 东莞理工（大杂烩，懒政）</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">⚠️ 注释</div>
+          专业组越纯粹 → 越受欢迎 → 分数越容易涨。<br>
+          大杂烩组分数永远高不了，但被调剂风险也大。<br>
+          <strong>华南理工案例：</strong>24 年大杂烩组最低排位 15907 → 25 年拆分后涨了 2000+ 位。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🎯</span> 冲 · 稳 · 保 策略</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-tip">冲</span>有转专业政策好的学校 → 大胆冲，哪怕被调剂冷门也能转</li>
+          <li><span class="tag tag-tip">冲</span>中外合办组（分数低、专业单一、不怕调剂）</li>
+          <li><span class="tag tag-warn">稳</span>六保一学校分数大概率上涨，"稳"的可能变"冲"</li>
+          <li><span class="tag tag-tip">保</span>后面多加几个保底组</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🎲</span> 大小年评估</div>
+      <div class="node-content">
+        <ul>
+          <li>主要出现在<strong>省外院校</strong>（招生人数少 → 波动大）</li>
+          <li>省内要出现大小年极难（中大 2021 大类招生是"10 年一遇"）</li>
+          <li>非理工类（财经、外语）波动更大</li>
+          <li>社会热点会扎堆影响（如 21 年法学综艺 → 政法大学暴涨）</li>
+          <li><span class="tag tag-warn">警告</span>大小年<strong>不连续</strong>，不能赌！只能参考，不能作为决策依据</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">📊 案例：中国政法大学 物理组</div>
+          2021 年：<span class="num-bad">1500 名</span>（心动的 offer 热播 → 法学爆火）<br>
+          2022 年：跌到 <span class="num">12000 名</span>（冷却）<br>
+          2023-24 年：继续波动<br>
+          <strong>结论：</strong>看 5 年数据找趋势，但不要赌。
+        </div>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📋</span> 录取条件检查清单</div>
+      <div class="node-content">
+        <ul>
+          <li>拿到"大厚本"后，<strong>每一行字都要看</strong></li>
+          <li>对比去年招生条件，找出变化</li>
+          <li>关注：是否应届生、特控线要求、单科分数要求、外语要求</li>
+          <li><span class="tag tag-warn">风险</span>条件不符仍填报 → <strong>退档</strong></li>
+        </ul>
+        <div class="case">
+          <div class="case-title">📊 案例</div>
+          北京电子科技学院：25 年新增"必须应届普通高中毕业生"（不能复读生）<br>
+          汕头大学医学院：历史组 24 年要求"历史+化学" → 招到 <span class="num-bad">463 分</span>最低 → 25 年取消历史组招生
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 板块5 ==================== -->
+<div class="branch b5">
+  <div class="branch-header" onclick="toggle(this)">
+    <span class="branch-icon">🏛️</span>
+    <span class="branch-title">五、高校办学形式与证书差异</span>
+    <span class="branch-badge">易混淆点</span>
+    <span class="branch-arrow">▶</span>
+  </div>
+  <div class="branch-body">
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🏫</span> 一校多区</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-tip">统一管理</span>人大（苏州/通州/海淀）、哈工大（本部/威海/深圳）、厦大（本部/马来）等</li>
+          <li>大部分学校不同校区毕业证<strong>无区别</strong></li>
+          <li>哈工深 / 北师珠：毕业证注明培养校区（不影响求职升学）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">⚠️</span> 三个特殊例外</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-warn">注意</span>中国<strong>地质</strong>、中国<strong>矿业</strong>、中国<strong>石油</strong> — 法人不同，独立发证</li>
+          <li>记住口诀：<strong>"地 · 矿 · 石油"</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🌏</span> 厦大马来西亚分校</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-new">唯一</span>通过志愿填报可以去<strong>海外</strong>读书的学校</li>
+          <li>全程在马来西亚，教授全是厦大教授</li>
+          <li>保研与厦大本部一模一样</li>
+          <li>分数相对较低：<span class="num">610–620</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📜</span> 学位类型辨析</div>
+      <div class="node-content">
+        <ul>
+          <li><strong>双学位：</strong>两个学位，学习量大（一天 4-5 节课），文科较多</li>
+          <li><strong>联合学士学位：</strong>两校轮流上课，由录取校颁发，注明联合校名</li>
+          <li><strong>联合培养：</strong>同上轮换，但毕业证只写自己学校</li>
+          <li><strong>协同培养：</strong>本科录取，四年在专科院校上课（越来越少了）</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          在在线表格搜索"联合培养""联合学士学位"等关键词，可以快速找到这类项目。<br>
+          协同培养适合 500 分以下想上公办的学生。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== 板块6 ==================== -->
+<div class="branch b6">
+  <div class="branch-header" onclick="toggle(this)">
+    <span class="branch-icon">🛠️</span>
+    <span class="branch-title">六、工具 · 方法论 · 后续安排</span>
+    <span class="branch-badge">行动指南</span>
+    <span class="branch-arrow">▶</span>
+  </div>
+  <div class="branch-body">
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📊</span> 在线表格工具</div>
+      <div class="node-content">
+        <ul>
+          <li>21–25 年各校各专业录取分数线 / 位次</li>
+          <li>保研率、城市、专业说明等信息</li>
+          <li>持续更新至 6/24（2026 年招生计划出来后第一时间更新）</li>
+          <li><span class="tag tag-warn">注意</span>只能在线查看，不能下载（数据持续更新中）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">🤖</span> AI 填志愿的局限</div>
+      <div class="node-content">
+        <ul>
+          <li>夸克、阳光高考等工具：<strong>只能按分数排位推荐</strong></li>
+          <li>无法处理：大类拆分、六保一、新专业、中外合办、大小年等复杂变化</li>
+          <li>只能做初步筛选，<strong>不能替代深入研究</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">📅</span> 后续安排</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-tip">明天</span><strong>6/22 下午 2:00</strong> — 第三讲：志愿填报基本逻辑与风险管理（线上，限 1000 人）</li>
+          <li><span class="tag tag-tip">6/24 前</span>2026 年招生计划公布，在线表格更新</li>
+          <li><span class="tag tag-tip">6/26</span>线下讲座（<strong>港中大深圳研究院·南山</strong>，非龙岗），按分数段分场</li>
+          <li><span class="tag tag-new">6/25</span>高考出分 → 刘老师将迅速做分析并发群</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="node">
+      <div class="node-title"><span class="emoji">💡</span> 刘老师的核心态度</div>
+      <div class="node-content">
+        <ul>
+          <li><span class="tag tag-key">核心</span><strong>不提供收费志愿填报服务</strong>，也不建议家长花钱买服务</li>
+          <li>志愿填报必须<strong>亲力亲为</strong>，学生本人要参与</li>
+          <li>行业里能把志愿填好的人"极少无比"，需要眼界 + 经验</li>
+          <li>专业 > 城市 > 学校头衔（文科城市第一）</li>
+          <li>985/211 的 title <strong>"最不重要"</strong>，10 年后专业和能力为王</li>
+        </ul>
+        <div class="case">
+          <div class="case-title">💡 注释</div>
+          这是刘老师的个人观点，有一定争议性。但对于中档学生来说，"专业 + 城市"的组合确实可能比一个偏远 985 的冷门专业更有实际价值。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  基于刘老师（有未来生涯）2026年6月21日讲座内容整理 · 思维导图由 AI 生成
+</div>
+
+<script>
+function toggle(header) {
+  header.parentElement.classList.toggle('open');
+}
+// 默认全部展开第一个，其他收起（已经是这样设置的）
+</script>
+
+</body>
+</html>
